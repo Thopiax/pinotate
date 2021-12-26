@@ -17,7 +17,7 @@ def datetime_to_local(seconds_since_ref_date):
     utc = utc.replace(tzinfo=from_zone)
     return utc.astimezone(to_zone).strftime('%c')
 
-def generate_md(title, highlights, with_headings=True, normal_sorting=True):
+def generate_md(title, highlights, with_headings=True, normal_sorting=True, include_notes=True):
     text = '# {}\n\n'.format(title)    
     if normal_sorting:
         highlights = sorted(highlights, key=(lambda highlight: (highlight.chapter, highlight.ref_in_chapter, highlight.created)), reverse=False)
@@ -26,6 +26,10 @@ def generate_md(title, highlights, with_headings=True, normal_sorting=True):
         if with_headings and highlight.heading not in added_headings and len(highlight.heading) > 0:
             text += '---\n## {}\n'.format(highlight.heading)
             added_headings.append(highlight.heading)
+        
+
         text += '*{}*\n'.format(datetime_to_local(highlight.created))
+        if include_notes and highlight.note is not None and len(highlight.note) > 0:
+            text += '-\n{}\n-\n'.format(highlight.note)
         text += '> {}\n\n'.format(highlight.text.replace('\n', '\n> '))
     return text

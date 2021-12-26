@@ -43,20 +43,23 @@ class IBooksWorker (object):
         for title in self.titles():    
             self.__export(title, args.out, args.headings, args.sort)
 
-    def __export(self, title, out_dir, with_headings=True, normal_sorting=True):
+    def __export(self, title, out_dir, with_headings=True, normal_sorting=True, include_notes=True):
         asset_id = self.asset_id(title)    
         if not asset_id:
             print("There is no book `{}` in library.".format(title))
             return
+        
         highlights = self.highlights(asset_id)    
+        
         if not len(highlights):
             print("No highlights were found in book `{}`.".format(title))
             return
-        self.__save(title, highlights, out_dir, with_headings, normal_sorting)
 
-    def __save(self, title, highlights, out_dir, with_headings=True, normal_sorting=True):
+        self.__save(title, highlights, out_dir, with_headings, normal_sorting, include_notes)
+
+    def __save(self, title, highlights, out_dir, with_headings=True, normal_sorting=True, include_notes=True):
         filename = os.path.join(out_dir, "{}.md".format(valid_filename(title)))
-        md = generate_md(title, highlights, with_headings, normal_sorting)
+        md = generate_md(title, highlights, with_headings, normal_sorting, include_notes)
         with open(filename, 'w') as md_file:
             md_file.write(md)
         print('Created file "{}"'.format(filename))
